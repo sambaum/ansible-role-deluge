@@ -1,2 +1,71 @@
 ---
 # tasks file for ansible-role-deluge
+
+- name: add deluge apt repositories 
+  apt_repository:
+    repo: "{{ item }}"
+  with_items:
+    - ppa:deluge-team/stable
+
+- name: install deluge packages
+  package:
+    name:
+      - deluged
+      - deluge-web
+      - deluge-console
+    state: present
+
+- name: Add the deluge user
+  user:
+    name: "{{ deluge_user }}"
+    home: /var/lib/deluge
+    comment: Deluge Service
+
+- name: Configure deluge (stop deluge if config change is required)
+  template:
+    src: core.conf.j2
+    dest: /var/lib/deluge/.config/deluge/core.conf
+    owner: "{{ deluge_user }}"
+    group: "{{ deluge_group }}"
+  notify: stop deluged
+
+- name: flush handlers because deluge needs to be stopped for config changes
+  meta: flush_handlers
+
+- name: Configure deluge
+  template:
+    src: core.conf.j2
+    dest: /var/lib/deluge/.config/deluge/core.conf 
+    owner: "{{ deluge_user }}"
+    group: "{{ deluge_group }}"
+  notify: restart deluged
+ 
+- name: Add system deluged.service
+  template:
+    src: deluged.service.j2
+    dest: /etc/systemd/system/deluged.service
+
+- name: enable deluged.service
+  systemd:
+    name: deluged.service
+    enabled: yes
+
+- name: Make sure deluged.service is running
+  systemd:
+    state: started
+    name: deluged.service
+
+- name: Add system deluged.service
+  template:
+    src: deluge-web.service.j2
+    dest: /etc/systemd/system/deluge-web.service
+
+- name: enable deluge-web.service
+  systemd:
+    name: deluge-web.service
+    enabled: yes
+
+- name: Make sure deluge-web.service is running
+  systemd:
+    state: started
+    name: deluge-web.service

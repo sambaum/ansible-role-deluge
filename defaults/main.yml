@@ -1,2 +1,12 @@
 ---
 # defaults file for ansible-role-deluge
+
+deluge_user: deluge 
+deluge_group: deluge
+deluge_download_location: /var/lib/deluge/Downloads
+deluge_move_completed: "false"
+deluge_move_completed_path: /var/lib/deluge/Downloads
+deluge_enabled_plugins: 
+# Example: deluge_enabled_plugins: '"Label", "Notifications"'
+
+

@@ -1,7 +1,7 @@
 Role Name
 =========
 
-A brief description of the role goes here.
+Deluge role for Ubuntu 18.04 with systemd as headless
 
 Requirements
 ------------
