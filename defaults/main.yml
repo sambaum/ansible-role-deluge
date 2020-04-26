@@ -8,5 +8,6 @@ deluge_move_completed: "false"
 deluge_move_completed_path: /var/lib/deluge/Downloads
 deluge_enabled_plugins: 
 # Example: deluge_enabled_plugins: '"Label", "Notifications"'
-
-
+deluge_max_active_downloading: 3
+deluge_max_active_limit: 8
+deluge_max_connections_global: 200
