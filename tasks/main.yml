@@ -21,25 +21,6 @@
     home: /var/lib/deluge
     comment: Deluge Service
 
-- name: Configure deluge (stop deluge if config change is required)
-  template:
-    src: core.conf.j2
-    dest: /var/lib/deluge/.config/deluge/core.conf
-    owner: "{{ deluge_user }}"
-    group: "{{ deluge_group }}"
-  notify: stop deluged
-
-- name: flush handlers because deluge needs to be stopped for config changes
-  meta: flush_handlers
-
-- name: Configure deluge
-  template:
-    src: core.conf.j2
-    dest: /var/lib/deluge/.config/deluge/core.conf 
-    owner: "{{ deluge_user }}"
-    group: "{{ deluge_group }}"
-  notify: restart deluged
- 
 - name: Add system deluged.service
   template:
     src: deluged.service.j2
@@ -69,3 +50,28 @@
   systemd:
     state: started
     name: deluge-web.service
+
+- name: sleep for 2 seconds and continue with play
+  wait_for:
+    timeout: 2
+  delegate_to: localhost
+
+- name: Configure deluge (stop deluge if config change is required)
+  template:
+    src: core.conf.j2
+    dest: /var/lib/deluge/.config/deluge/core.conf
+    owner: "{{ deluge_user }}"
+    group: "{{ deluge_group }}"
+  notify: stop deluged
+
+- name: flush handlers because deluge needs to be stopped for config changes
+  meta: flush_handlers
+
+- name: Configure deluge
+  template:
+    src: core.conf.j2
+    dest: /var/lib/deluge/.config/deluge/core.conf 
+    owner: "{{ deluge_user }}"
+    group: "{{ deluge_group }}"
+  notify: restart deluged
+ 
